@@ -20,10 +20,11 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'email_verified_at' => $this->email_verified_at,
             'is_active' => $this->is_active,
-            'roles' => $this->whenLoaded('roles', fn() => $this->getRoleNames()),
-            'permissions' => $this->whenLoaded('permissions', fn() => $this->getAllPermissions()->pluck('name')),
+            'roles' => $this->whenLoaded('roles', fn () => $this->getRoleNames()),
+            'permissions' => $this->whenLoaded('permissions', fn () => $this->getAllPermissions()->pluck('name')),
             'avatar' => $this->whenLoaded('media', function () {
                 $avatar = $this->primaryMedia('avatar');
+
                 return $avatar ? [
                     'id' => $avatar->id,
                     'name' => $avatar->filename,

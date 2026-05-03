@@ -2,20 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Traits\HasMedia;
-use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasMedia, HasRoles;
+    use HasApiTokens, HasFactory, HasMedia, HasRoles;
 
     protected $fillable = [
         'name',
         'email',
         'password',
-        'is_active'
+        'is_active',
     ];
 
     protected $casts = [

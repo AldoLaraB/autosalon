@@ -12,42 +12,42 @@ class AvatarController extends Controller
     {
         return view('profile.avatar', [
             'user' => Auth::user(),
-            'avatar' => Auth::user()->primaryMedia('avatar')
+            'avatar' => Auth::user()->primaryMedia('avatar'),
         ]);
     }
 
     public function update(Request $request)
-{
-    $request->validate([
-        'avatar' => 'required|image|mimes:jpeg,png,gif,webp'
-    ]);
+    {
+        $request->validate([
+            'avatar' => 'required|image|mimes:jpeg,png,gif,webp',
+        ]);
 
-    try {
-        $user = Auth::user();
-        
-        // Rimuovi avatar vecchio se esiste
-        $oldAvatar = $user->primaryMedia('avatar');
-        if ($oldAvatar) {
-            $user->deleteMedia($oldAvatar);
+        try {
+            $user = Auth::user();
+
+            // Rimuovi avatar vecchio se esiste
+            $oldAvatar = $user->primaryMedia('avatar');
+            if ($oldAvatar) {
+                $user->deleteMedia($oldAvatar);
+            }
+
+            // Salva nuovo avatar
+            $user->addMedia($request->file('avatar'), 'avatar', true);
+
+            return back()->with('status', 'avatar-aggiornato');
+
+        } catch (\InvalidArgumentException $e) {
+            return back()->withErrors(['avatar' => $e->getMessage()]);
+        } catch (\Exception $e) {
+            return back()->withErrors(['avatar' => 'Errore durante il caricamento.']);
         }
-        
-        // Salva nuovo avatar
-        $user->addMedia($request->file('avatar'), 'avatar', true);
-
-        return back()->with('status', 'avatar-aggiornato');
-        
-    } catch (\InvalidArgumentException $e) {
-        return back()->withErrors(['avatar' => $e->getMessage()]);
-    } catch (\Exception $e) {
-        return back()->withErrors(['avatar' => 'Errore durante il caricamento.']);
     }
-}
 
     public function destroy()
     {
         $user = Auth::user();
         $avatar = $user->primaryMedia('avatar');
-        
+
         if ($avatar) {
             $user->deleteMedia($avatar);
         }

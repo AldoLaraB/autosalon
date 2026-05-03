@@ -45,7 +45,7 @@ class Media extends Model
         $path = $this->path;
 
         if ($conversion === 'thumb') {
-            $thumbPath = pathinfo($path, PATHINFO_DIRNAME) . '/thumb_' . pathinfo($path, PATHINFO_BASENAME);
+            $thumbPath = pathinfo($path, PATHINFO_DIRNAME).'/thumb_'.pathinfo($path, PATHINFO_BASENAME);
             if (Storage::disk($this->disk)->exists($thumbPath)) {
                 $path = $thumbPath;
             }
@@ -58,7 +58,8 @@ class Media extends Model
     {
         if (function_exists('request') && request()->instance()) {
             $basePath = rtrim(request()->getBasePath(), '/');
-            return ($basePath ? $basePath : '') . '/storage/' . ltrim($path, '/');
+
+            return ($basePath ? $basePath : '').'/storage/'.ltrim($path, '/');
         }
 
         /** @var \Illuminate\Filesystem\FilesystemAdapter $storage */
