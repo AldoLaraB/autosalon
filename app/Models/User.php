@@ -49,4 +49,14 @@ class User extends Authenticatable
     {
         return $this->hasRole('admin');
     }
+
+    public function shop()
+    {
+        return $this->hasOne(Shop::class);
+    }
+
+    public function cars()
+    {
+        return $this->hasMany(Car::class);
+    }
 }

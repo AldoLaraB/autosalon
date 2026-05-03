@@ -24,6 +24,13 @@ class ShopController extends Controller
 
     public function store(Request $request)
     {
+        // Controlla se l'utente ha già un negozio
+        $existingShop = Shop::where('user_id', Auth::id())->first();
+        if ($existingShop) {
+            return redirect()->route('shops.show', $existingShop->id)
+                ->with('error', 'Hai già un negozio!');
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -40,8 +47,14 @@ class ShopController extends Controller
             'is_active' => true,
         ]);
 
-        return redirect()->route('shop.show', $shop->id)
-            ->with('success', 'Negozio creato con successo!');
+        // Assegna ruolo editor all'utente (può gestire auto e locations)
+        $user = Auth::user();
+        if (! $user->hasRole('editor')) {
+            $user->assignRole('editor');
+        }
+
+        return redirect()->route('shops.show', $shop->id)
+            ->with('success', 'Negozio creato con successo! Ora hai accesso come concessionario.');
     }
 
     public function edit($id)

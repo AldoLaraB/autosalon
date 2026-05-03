@@ -301,10 +301,18 @@ Validazione file:
 | GET    | /profile/avatar | AvatarController@edit     | auth           | profile.avatar         |
 | PUT    | /profile/avatar | AvatarController@update   | auth           | profile.avatar.update  |
 | DELETE | /profile/avatar | AvatarController@destroy  | auth           | profile.avatar.destroy |
+| GET    | /admin/users    | AdminController@usersIndex | auth, role:admin | admin.users           |
+| GET    | /admin/shops   | AdminController@shopsIndex | auth, role:admin | admin.shops           |
+| GET    | /admin/cars    | AdminController@carsIndex  | auth, role:admin | admin.cars            |
+| PATCH  | /admin/users/{user}/toggle | AdminController@toggleUserStatus | auth, role:admin | admin.users.toggle |
+| PATCH  | /admin/shops/{shop}/toggle | AdminController@toggleShopStatus | auth, role:admin | admin.shops.toggle |
+| PATCH  | /admin/cars/{car}/toggle | AdminController@toggleCarStatus | auth, role:admin | admin.cars.toggle |
 
 Rotte auth.php (Breeze):
 
 - Login, Register, Logout, Password Reset, Email Verification
+
+**Note**: Registrazione assegna ruolo `user`. Creazione shop assegna `editor`. Admin ha accesso a `/admin/*`.
 
 ---
 
@@ -528,12 +536,12 @@ Metodi:
 
 | File                                                       | Descrizione               |
 | ---------------------------------------------------------- | ------------------------- |
-| welcome.blade.php                                          | Landing page con search box + recent cars + CTA |
-| dashboard.blade.php                                        | Dashboard utente loggato  |
+| welcome.blade.php                                          | Landing page con search box + recent cars + CTA (pulito da default Laravel) |
+| dashboard.blade.php                                        | Dashboard differenziata per ruolo (admin/shop/user) |
 | search/index.blade.php                                     | Pagina ricerca avanzata (/cerca) |
 | search/results.blade.php                                   | Risultati ricerca (/search) |
 | shops/show.blade.php                                       | Pagina pubblica negozio con auto e locations |
-| shops/create.blade.php                                     | Form creazione negozio (auth) |
+| shops/create.blade.php                                     | Form creazione negozio (auth) - previene shop multipli |
 | shops/edit.blade.php                                       | Form modifica negozio (auth) |
 | cars/show.blade.php                                        | Dettaglio auto con gallery |
 | cars/create.blade.php                                      | Form inserimento auto (auth) |
@@ -543,6 +551,9 @@ Metodi:
 | profile/partials/update-profile-information-form.blade.php | Form info profilo         |
 | profile/partials/update-password-form.blade.php            | Form cambio password      |
 | profile/partials/delete-user-form.blade.php                | Form eliminazione account |
+| admin/users.blade.php                                      | Admin: gestione users (attiva/disattiva) |
+| admin/shops.blade.php                                      | Admin: gestione shops |
+| admin/cars.blade.php                                       | Admin: gestione auto |
 | layouts/navigation.blade.php                               | Navigation bar (logo → dashboard/home, solo Dashboard link per auth) |
 
 Layout: usa componenti Blade Laravel (x-app-layout, x-slot)
@@ -553,8 +564,12 @@ Layout: usa componenti Blade Laravel (x-app-layout, x-slot)
 - **Cerca avanzata** → link "Ricerca avanzata" → `/cerca` (pagina completa)
 - **Auto details** → click su auto → `/cars/{car}` (dettaglio)
 - **Shop page** → da auto → `/shops/{shop}` (tutte auto del concessionario)
-- **Register** → click "Registrati ora" → `/register` → entra in area privata
-- **Area privata** → dashboard → crea shop → aggiungi auto → gestisci locations
+- **Register** → click "Registrati ora" → `/register` → assegnato ruolo `user`
+- **Area privata** → dashboard differenziata per ruolo:
+  - **Admin**: pannello admin con link a users/shops/cars
+  - **Editor**: "Il tuo Spazio" con link al shop, inserimento auto, gestione locations
+  - **User**: "I tuoi Annunci" con proprie auto + possibilità creare negozio
+- **Creazione shop** → `/shops/create` → auto-assegna ruolo `editor` → accesso a gestione completa
 
 ---
 
@@ -697,17 +712,20 @@ autosalon/
 ├── app/
 │   ├── Http/
 │   │   ├── Controllers/
+│   │   │   ├── AdminController.php          ← NUOVO: gestione admin
 │   │   │   ├── Api/
 │   │   │   │   ├── AuthController.php
 │   │   │   │   ├── CarApiController.php
 │   │   │   │   └── ShopApiController.php
-│   │   │   ├── Profile/
-│   │   │   │   └── AvatarController.php
+│   │   │   ├── Auth/
+│   │   │   │   └── RegisteredUserController.php  ← MODIFICATO: assign 'user' role
 │   │   │   ├── CarController.php
 │   │   │   ├── LocationController.php
+│   │   │   ├── Profile/
+│   │   │   │   └── AvatarController.php
 │   │   │   ├── ProfileController.php
 │   │   │   ├── SearchController.php
-│   │   │   └── ShopController.php
+│   │   │   └── ShopController.php     ← MODIFICATO: prevent multiple shops, assign 'editor' role
 │   │   ├── Requests/
 │   │   │   └── ProfileUpdateRequest.php
 │   │   └── Resources/
@@ -720,7 +738,7 @@ autosalon/
 │   │   ├── Location.php
 │   │   ├── Media.php
 │   │   ├── Shop.php
-│   │   └── User.php
+│   │   └── User.php                    ← MODIFICATO: added shop() and cars() relationships
 │   ├── Traits/
 │   │   └── HasMedia.php
 │   └── Providers/
@@ -760,6 +778,10 @@ autosalon/
 │   │   ├── app.js
 │   │   └── bootstrap.js
 │   └── views/
+│       ├── admin/                         ← NUOVO: admin panel
+│       │   ├── users.blade.php
+│       │   ├── shops.blade.php
+│       │   └── cars.blade.php
 │       ├── layouts/
 │       │   └── navigation.blade.php
 │       ├── search/
@@ -777,10 +799,10 @@ autosalon/
 │       │   ├── edit.blade.php
 │       │   ├── avatar.blade.php
 │       │   └── partials/
-│       ├── dashboard.blade.php
-│       └── welcome.blade.php
+│       ├── dashboard.blade.php            ← MODIFICATO: role-based content
+│       └── welcome.blade.php             ← MODIFICATO: pulito da default Laravel, solo search + recent cars
 ├── routes/
-│   ├── web.php
+│   ├── web.php                       ← MODIFICATO: added admin routes
 │   ├── api.php
 │   ├── auth.php
 │   └── console.php

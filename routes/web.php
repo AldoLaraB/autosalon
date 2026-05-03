@@ -25,23 +25,23 @@ Route::get('/dashboard', function () {
 Route::get('/cerca', [SearchController::class, 'index'])->name('search.index');
 Route::get('/search', [SearchController::class, 'search'])->name('search.results');
 
+Route::middleware('auth')->group(function () {
+    Route::get('/shops/create', 'App\Http\Controllers\ShopController@create')->name('shops.create');
+    Route::post('/shops', 'App\Http\Controllers\ShopController@store')->name('shops.store');
+    Route::get('/shops/{shop}/edit', 'App\Http\Controllers\ShopController@edit')->name('shops.edit');
+    Route::put('/shops/{shop}', 'App\Http\Controllers\ShopController@update')->name('shops.update');
+
+    Route::get('/cars/create', 'App\Http\Controllers\CarController@create')->name('cars.create');
+    Route::post('/cars', 'App\Http\Controllers\CarController@store')->name('cars.store');
+    Route::get('/cars/{car}/edit', 'App\Http\Controllers\CarController@edit')->name('cars.edit');
+    Route::put('/cars/{car}', 'App\Http\Controllers\CarController@update')->name('cars.update');
+
+    Route::post('/shops/{shop}/locations', 'App\Http\Controllers\LocationController@store')->name('locations.store');
+    Route::delete('/shops/{shop}/locations/{location}', 'App\Http\Controllers\LocationController@destroy')->name('locations.destroy');
+});
+
 Route::get('/shops/{shop}', [ShopController::class, 'show'])->name('shops.show');
 Route::get('/cars/{car}', [CarController::class, 'show'])->name('cars.show');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/shops/create', [ShopController::class, 'create'])->name('shops.create');
-    Route::post('/shops', [ShopController::class, 'store'])->name('shops.store');
-    Route::get('/shops/{shop}/edit', [ShopController::class, 'edit'])->name('shops.edit');
-    Route::put('/shops/{shop}', [ShopController::class, 'update'])->name('shops.update');
-
-    Route::get('/cars/create', [CarController::class, 'create'])->name('cars.create');
-    Route::post('/cars', [CarController::class, 'store'])->name('cars.store');
-    Route::get('/cars/{car}/edit', [CarController::class, 'edit'])->name('cars.edit');
-    Route::put('/cars/{car}', [CarController::class, 'update'])->name('cars.update');
-
-    Route::post('/shops/{shop}/locations', [LocationController::class, 'store'])->name('locations.store');
-    Route::delete('/shops/{shop}/locations/{location}', [LocationController::class, 'destroy'])->name('locations.destroy');
-});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -53,4 +53,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile/avatar', [AvatarController::class, 'destroy'])->name('profile.avatar.destroy');
 });
 
-require __DIR__.'/auth.php';
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/users', 'App\Http\Controllers\AdminController@usersIndex')->name('admin.users');
+    Route::get('/admin/shops', 'App\Http\Controllers\AdminController@shopsIndex')->name('admin.shops');
+    Route::get('/admin/cars', 'App\Http\Controllers\AdminController@carsIndex')->name('admin.cars');
+    Route::patch('/admin/users/{user}/toggle', 'App\Http\Controllers\AdminController@toggleUserStatus')->name('admin.users.toggle');
+    Route::patch('/admin/shops/{shop}/toggle', 'App\Http\Controllers\AdminController@toggleShopStatus')->name('admin.shops.toggle');
+    Route::patch('/admin/cars/{car}/toggle', 'App\Http\Controllers\AdminController@toggleCarStatus')->name('admin.cars.toggle');
+});
+
+require __DIR__ . '/auth.php';

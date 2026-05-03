@@ -7,9 +7,12 @@ test('registration screen can be rendered', function () {
 });
 
 test('new users can register', function () {
+    // Assicurati che i ruoli esistano
+    $this->artisan('db:seed', ['--class' => 'RolePermissionSeeder']);
+
     $response = $this->post('/register', [
         'name' => 'Test User',
-        'email' => 'test@example.com',
+        'email' => 'newuser@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
     ]);

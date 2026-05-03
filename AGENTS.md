@@ -45,9 +45,11 @@
 - **ProfileController**: `app/Http/Controllers/ProfileController.php` (edit, update, destroy)
 - **AvatarController**: `app/Http/Controllers/Profile/AvatarController.php` (edit, update, destroy)
 - **SearchController**: `app/Http/Controllers/SearchController.php` (index → /cerca, search → /search)
-- **ShopController**: `app/Http/Controllers/ShopController.php` (show, create, store, edit, update)
-- **CarController**: `app/Http/Controllers/CarController.php` (create, store, show, edit, update)
+- **ShopController**: `app/Http/Controllers/ShopController.php` (show, create, store, edit, update - prevent multiple shops, auto-assign editor role)
+- **CarController**: `app/Http/Controllers/CarController.php` (create, store, show, edit, update, myAds)
 - **LocationController**: `app/Http/Controllers/LocationController.php` (store, destroy)
+- **AdminController**: `app/Http/Controllers/AdminController.php` (usersIndex, shopsIndex, carsIndex, toggleUserStatus, toggleShopStatus, toggleCarStatus)
+- **RegisteredUserController**: `app/Http/Controllers/Auth/RegisteredUserController.php` (assign 'user' role on registration)
 - **AuthController API**: `app/Http/Controllers/Api/AuthController.php` (login, register, me, logout)
 - **ShopApiController**: `app/Http/Controllers/Api/ShopApiController.php` (index, show, requestDealer)
 - **CarApiController**: `app/Http/Controllers/Api/CarApiController.php` (index, show, store, update)
@@ -60,6 +62,17 @@
 - **Cerca** (`/cerca`): SearchController@index - pagina ricerca avanzata
 - **Search Results** (`/search`): SearchController@search - risultati ricerca
 - **Navigation**: Logo → dashboard (logged in) o home (guest). Solo "Dashboard" link per utenti autenticati
+
+### Flusso Utenti e Ruoli
+- **Registrazione**: tutti si registrano come `user` (ruolo automatico)
+- **User semplice**: può creare annunci auto singoli (`cars.create`)
+- **Editor/Dealer**: crea shop → auto-assign ruolo `editor` → può gestire shop, auto, locations
+- **Admin**: controllo totale (`admin` ruolo) → gestione users/shops/cars da `/admin/*`
+
+### Dashboard per Ruolo
+- **Admin**: vede pannello admin con link a users, shops, cars
+- **Editor**: vede "Il tuo Spazio" con link al shop, inserimento auto, gestione locations
+- **User**: vede "I tuoi Annunci" con le proprie auto e possibilità di creare negozio
 
 ### Validazione
 - **ProfileUpdateRequest**: `app/Http/Requests/ProfileUpdateRequest.php`
@@ -89,17 +102,20 @@
 
 ### View Blade
 - `resources/views/welcome.blade.php` - Landing page con search box + recent cars + CTA register
-- `resources/views/dashboard.blade.php` - Dashboard utente loggato
+- `resources/views/dashboard.blade.php` - Dashboard differenziata per ruolo (admin/shop/user)
 - `resources/views/profile/edit.blade.php` - Modifica profilo
 - `resources/views/profile/avatar.blade.php` - Modifica avatar
 - `resources/views/search/index.blade.php` - Pagina ricerca avanzata (/cerca)
 - `resources/views/search/results.blade.php` - Risultati ricerca (/search)
 - `resources/views/shops/show.blade.php` - Pagina pubblica negozio
-- `resources/views/shops/create.blade.php` - Crea negozio (auth)
+- `resources/views/shops/create.blade.php` - Crea negozio (auth) - previene shop multipli
 - `resources/views/shops/edit.blade.php` - Modifica negozio (auth)
 - `resources/views/cars/show.blade.php` - Dettaglio auto
 - `resources/views/cars/create.blade.php` - Inserisci auto (auth)
 - `resources/views/cars/edit.blade.php` - Modifica auto (auth)
+- `resources/views/admin/users.blade.php` - Admin: gestione users (attiva/disattiva)
+- `resources/views/admin/shops.blade.php` - Admin: gestione shops
+- `resources/views/admin/cars.blade.php` - Admin: gestione auto
 
 ### Test
 - Framework: Pest PHP
