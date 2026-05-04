@@ -78,7 +78,7 @@
                     <div class="p-6 text-gray-900">
                         <h3 class="font-semibold text-lg mb-4">I tuoi Annunci</h3>
                         @php
-                            $userCars = auth()->user()->cars()->where('is_active', true)->with('brand', 'primaryMedia')->latest()->limit(5)->get();
+                            $userCars = auth()->user()->cars()->where('is_active', true)->with('brand')->latest()->limit(5)->get();
                         @endphp
                         @if($userCars->count() > 0)
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">

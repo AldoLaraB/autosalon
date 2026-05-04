@@ -242,14 +242,20 @@ Validazione file:
 - `update(Request, $id)`: aggiorna negozio
 
 ### CarController
-
+ 
 **Path**: `app/Http/Controllers/CarController.php`
-
+ 
 - `create()`: form inserimento auto (con brands, shops, locations)
-- `store(Request)`: salva nuova auto
+- `store(Request)`: salva nuova auto + gestione immagini (max 5 foto, ottimizzazione automatica Intervention Image)
 - `show($id)`: visualizza dettaglio auto con gallery
 - `edit($id)`: form modifica auto
 - `update(Request, $id)`: aggiorna auto
+ 
+**Note implementazione store()**:
+- Converte `shop_id`/`location_id` stringa vuota in `null` prima della validazione
+- Validazione immagini: `photos` (array, min:1, max:5), `photos.*` (image, mimes:jpeg,png,jpg,gif,webp)
+- Nessun limite dimensione file: Intervention Image ridimensiona automaticamente a max 800px larghezza + compressione 80%
+- Salva immagini tramite `$car->addMedia()` con prima immagine come primaria (`is_primary=true`)
 
 ### LocationController
 
@@ -541,7 +547,8 @@ Metodi:
 
 | File                                                       | Descrizione               |
 | ---------------------------------------------------------- | ------------------------- |
-| welcome.blade.php                                          | Landing page con search box + recent cars + CTA (pulito da default Laravel) |
+| welcome.blade.php                                          | Landing page con search box + recent cars + CTA register (pulito da default Laravel) |
+| welcome.blade.php                                          | Mostra "Login" e "Register" per guest, "Dashboard" per utenti autenticati |
 | dashboard.blade.php                                        | Dashboard differenziata per ruolo (admin/shop/user) |
 | search/index.blade.php                                     | Pagina ricerca avanzata (/cerca) |
 | search/results.blade.php                                   | Risultati ricerca (/search) |
@@ -549,7 +556,7 @@ Metodi:
 | shops/create.blade.php                                     | Form creazione negozio (auth) - previene shop multipli |
 | shops/edit.blade.php                                       | Form modifica negozio (auth) |
 | cars/show.blade.php                                        | Dettaglio auto con gallery |
-| cars/create.blade.php                                      | Form inserimento auto (auth) |
+| cars/create.blade.php                                      | Form inserimento auto (auth) - gestione errori validazione + anteprima 5 immagini |
 | cars/edit.blade.php                                        | Form modifica auto (auth) |
 | profile/edit.blade.php                                     | Pagina modifica profilo   |
 | profile/avatar.blade.php                                   | Pagina modifica avatar    |

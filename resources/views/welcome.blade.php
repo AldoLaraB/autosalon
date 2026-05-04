@@ -73,8 +73,8 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             @foreach($recentCars as $car)
                 <a href="{{ route('cars.show', $car) }}" class="block bg-white dark:bg-[#161615] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-lg overflow-hidden hover:shadow-lg transition">
-                    @if($car->primaryMedia())
-                        <img src="{{ $car->primaryMedia()->url }}" alt="{{ $car->title }}" class="w-full h-40 object-cover">
+                    @if($car->primaryImage())
+                        <img src="{{ $car->primaryImage()->url }}" alt="{{ $car->title }}" class="w-full h-40 object-cover">
                     @else
                         <div class="w-full h-40 bg-gray-200 dark:bg-[#3E3E3A] flex items-center justify-center">
                             <span class="text-gray-400">No image</span>

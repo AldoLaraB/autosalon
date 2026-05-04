@@ -34,6 +34,13 @@ class Car extends Model
         'year' => 'integer',
     ];
 
+    protected $appends = ['title'];
+
+    public function getTitleAttribute()
+    {
+        return $this->brand->name.' '.$this->model.' '.$this->year;
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

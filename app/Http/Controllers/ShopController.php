@@ -11,7 +11,7 @@ class ShopController extends Controller
     public function show($id)
     {
         $shop = Shop::with(['locations', 'cars' => function ($query) {
-            $query->where('is_active', true)->with('brand', 'primaryMedia');
+            $query->where('is_active', true)->with('brand');
         }])->findOrFail($id);
 
         return view('shop.show', compact('shop'));

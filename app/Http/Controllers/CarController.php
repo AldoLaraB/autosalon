@@ -28,6 +28,11 @@ class CarController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'shop_id' => $request->shop_id ?: null,
+            'location_id' => $request->location_id ?: null,
+        ]);
+
         $request->validate([
             'shop_id' => 'nullable|exists:shops,id',
             'location_id' => 'nullable|exists:locations,id',
@@ -40,6 +45,8 @@ class CarController extends Controller
             'transmission' => 'nullable|string|max:50',
             'is_new' => 'boolean',
             'description' => 'nullable|string',
+            'photos' => 'required|array|min:1|max:5',
+            'photos.*' => 'image|mimes:jpeg,png,jpg,gif,webp',
         ]);
 
         $car = Car::create([
@@ -58,14 +65,20 @@ class CarController extends Controller
             'is_active' => true,
         ]);
 
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $index => $photo) {
+                $isPrimary = ($index === 0);
+                $car->addMedia($photo, 'gallery', $isPrimary);
+            }
+        }
+
         return redirect()->route('cars.show', $car->id)
             ->with('success', 'Auto inserita con successo!');
     }
 
     public function show($id)
     {
-        $car = Car::with(['brand', 'shop', 'location', 'user', 'gallery'])
-            ->findOrFail($id);
+        $car = Car::with(['brand', 'shop', 'location'])->findOrFail($id);
 
         return view('car.show', compact('car'));
     }
@@ -89,6 +102,11 @@ class CarController extends Controller
     public function update(Request $request, $id)
     {
         $car = Car::where('user_id', Auth::id())->findOrFail($id);
+
+        $request->merge([
+            'shop_id' => $request->shop_id ?: null,
+            'location_id' => $request->location_id ?: null,
+        ]);
 
         $request->validate([
             'shop_id' => 'nullable|exists:shops,id',

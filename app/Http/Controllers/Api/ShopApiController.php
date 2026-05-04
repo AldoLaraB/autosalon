@@ -24,7 +24,7 @@ class ShopApiController extends Controller
     {
         $shop = Shop::where('is_active', true)
             ->with(['user', 'locations', 'cars' => function ($query) {
-                $query->where('is_active', true)->with('brand', 'primaryMedia');
+                $query->where('is_active', true)->with('brand');
             }])
             ->findOrFail($id);
 

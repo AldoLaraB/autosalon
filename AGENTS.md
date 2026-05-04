@@ -47,7 +47,8 @@
 - **AvatarController**: `app/Http/Controllers/Profile/AvatarController.php` (edit, update, destroy)
 - **SearchController**: `app/Http/Controllers/SearchController.php` (index → /cerca, search → /search)
 - **ShopController**: `app/Http/Controllers/ShopController.php` (show, create, store, edit, update - prevent multiple shops, auto-assign editor role)
-- **CarController**: `app/Http/Controllers/CarController.php` (create, store, show, edit, update, myAds)
+- **CarController**: `app/Http/Controllers/CarController.php` (create, store + image handling, show, edit, update)
+  - `store()`: Converte `shop_id`/`location_id` vuoti in `null`, valida max 5 immagini, salva tramite `addMedia()` (Intervention Image ridimensiona a 800px + 80% qualità)
 - **LocationController**: `app/Http/Controllers/LocationController.php` (store, destroy)
 - **AdminController**: `app/Http/Controllers/AdminController.php` (usersIndex, shopsIndex, carsIndex, toggleUserStatus, toggleShopStatus, toggleCarStatus)
 - **RegisteredUserController**: `app/Http/Controllers/Auth/RegisteredUserController.php` (assign 'user' role on registration)
@@ -63,6 +64,8 @@
 - **Cerca** (`/cerca`): SearchController@index - pagina ricerca avanzata
 - **Search Results** (`/search`): SearchController@search - risultati ricerca
 - **Navigation**: Logo → dashboard (logged in) o home (guest). Solo "Dashboard" link per utenti autenticati
+- **Guest**: welcome mostra "Login" e "Register" (non "Dashboard")
+- **Auth**: welcome mostra link profilo con avatar, "Dashboard" visibile
 
 ### Flusso Utenti e Ruoli
 - **Registrazione**: tutti si registrano come `user` (ruolo automatico)
@@ -99,7 +102,9 @@
 - **Modello**: `app/Models/Media.php` (polimorfico)
 - **Metodi**: `addMedia()`, `primaryMedia()`, `getMediaByCollection()`, `deleteMedia()`
 - **Validazione**: MIME image/jpeg, image/png, image/gif, image/webp
-- **Ottimizzazione**: ridimensionamento automatico per avatar (300x300), gallery (800px), post (1200px)
+- **Ottimizzazione**: ridimensionamento automatico per avatar (300x300), gallery (800px larghezza + 80% qualità), post (1200px)
+- **Note**: Nessun limite dimensione file in validazione (es. `max:2048`) - Intervention Image ottimizza automaticamente
+- **Gallery auto**: max 5 immagini caricate, prima immagine = `is_primary=true`
 
 ### View Blade
 - `resources/views/welcome.blade.php` - Landing page con search box + recent cars + CTA register
@@ -112,7 +117,7 @@
 - `resources/views/shops/create.blade.php` - Crea negozio (auth) - previene shop multipli
 - `resources/views/shops/edit.blade.php` - Modifica negozio (auth)
 - `resources/views/cars/show.blade.php` - Dettaglio auto
-- `resources/views/cars/create.blade.php` - Inserisci auto (auth)
+- `resources/views/cars/create.blade.php` - Inserisci auto (auth) - gestione errori validazione + anteprima 5 immagini + old()
 - `resources/views/cars/edit.blade.php` - Modifica auto (auth)
 - `resources/views/admin/users.blade.php` - Admin: gestione users (attiva/disattiva)
 - `resources/views/admin/shops.blade.php` - Admin: gestione shops

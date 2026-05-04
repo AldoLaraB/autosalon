@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\CarController;
-use App\Http\Controllers\LocationController;
 use App\Http\Controllers\Profile\AvatarController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SearchController;
@@ -10,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     $recentCars = \App\Models\Car::where('is_active', true)
-        ->with(['brand', 'primaryMedia'])
+        ->with('brand')
         ->latest()
         ->limit(6)
         ->get();
@@ -62,4 +61,4 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::patch('/admin/cars/{car}/toggle', 'App\Http\Controllers\AdminController@toggleCarStatus')->name('admin.cars.toggle');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

@@ -11,7 +11,7 @@ class CarApiController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Car::where('is_active', true)->with(['brand', 'shop', 'location', 'primaryMedia']);
+        $query = Car::where('is_active', true)->with(['brand', 'shop', 'location']);
 
         if ($request->filled('brand_id')) {
             $query->where('brand_id', $request->brand_id);
@@ -55,7 +55,7 @@ class CarApiController extends Controller
     public function show($id)
     {
         $car = Car::where('is_active', true)
-            ->with(['brand', 'shop', 'location', 'user', 'gallery'])
+            ->with(['brand', 'shop', 'location', 'user'])
             ->findOrFail($id);
 
         return new CarResource($car);
