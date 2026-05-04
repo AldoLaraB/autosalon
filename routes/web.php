@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CarController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Profile\AvatarController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SearchController;
@@ -41,7 +42,20 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/shops/{shop}', [ShopController::class, 'show'])->name('shops.show');
+
+// Pubblica: contatta venditore (PRIMA di /cars/{car} per evitare collisioni)
+Route::post('/cars/{car}/contact', [ContactController::class, 'store'])
+    ->name('cars.contact')
+    ->middleware('throttle:3,10');
+
 Route::get('/cars/{car}', [CarController::class, 'show'])->name('cars.show');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/messages', [ContactController::class, 'index'])->name('messages.index');
+    Route::patch('/messages/{contact}/read', [ContactController::class, 'markAsRead'])->name('messages.read');
+    Route::delete('/messages/{contact}', [ContactController::class, 'destroy'])->name('messages.destroy');
+    Route::post('/messages/{contact}/reply', [ContactController::class, 'reply'])->name('messages.reply');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

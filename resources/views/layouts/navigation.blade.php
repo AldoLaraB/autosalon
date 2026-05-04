@@ -24,6 +24,20 @@
                         <x-nav-link :href="route('cars.create')" :active="request()->routeIs('cars.create')">
                             {{ __('Pubblica Annuncio') }}
                         </x-nav-link>
+
+                        @php
+                            $unreadMessages = auth()->user()
+                                ? \App\Models\Contact::whereHas('car', fn($q) => $q->where('user_id', auth()->id()))
+                                    ->where('is_read', false)
+                                    ->count()
+                                : 0;
+                        @endphp
+                        <x-nav-link :href="route('messages.index')" :active="request()->routeIs('messages.*')">
+                            Messaggi
+                            @if($unreadMessages > 0)
+                                <span class="ml-1 px-1.5 py-0.5 text-xs bg-red-500 text-white rounded-full">{{ $unreadMessages }}</span>
+                            @endif
+                        </x-nav-link>
                     @endauth
                 </div>
             </div>
@@ -109,6 +123,12 @@
                 @endif
                 <x-responsive-nav-link :href="route('cars.create')" :active="request()->routeIs('cars.create')">
                     {{ __('Pubblica Annuncio') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('messages.index')" :active="request()->routeIs('messages.*')">
+                    Messaggi
+                    @if($unreadMessages > 0)
+                        <span class="ml-1 px-1.5 py-0.5 text-xs bg-red-500 text-white rounded-full">{{ $unreadMessages }}</span>
+                    @endif
                 </x-responsive-nav-link>
             @endauth
         </div>

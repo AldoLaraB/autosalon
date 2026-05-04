@@ -95,6 +95,61 @@
                     </div>
                 </div>
             @endif
+
+            @if(auth()->guest() || auth()->id() !== $car->user_id)
+            {{-- Contatta il venditore --}}
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 mt-6">
+                <h3 class="text-lg font-semibold mb-4">Contatta il venditore</h3>
+
+                @if(session('success'))
+                    <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                <form action="{{ route('cars.contact', $car) }}" method="POST" class="space-y-4">
+                    @csrf
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="sender_name" class="block text-sm font-medium text-gray-700">Il tuo nome *</label>
+                            <input type="text" name="sender_name" id="sender_name" required maxlength="255"
+                                   value="{{ old('sender_name') }}"
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            @error('sender_name')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
+                            <label for="sender_email" class="block text-sm font-medium text-gray-700">La tua email *</label>
+                            <input type="email" name="sender_email" id="sender_email" required maxlength="255"
+                                   value="{{ old('sender_email') }}"
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            @error('sender_email')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+                    <div>
+                        <label for="message" class="block text-sm font-medium text-gray-700">Messaggio *</label>
+                        <textarea name="message" id="message" required rows="4" maxlength="5000"
+                                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">{{ old('message') }}</textarea>
+                        @error('message')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit"
+                                class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition">
+                            Invia messaggio
+                        </button>
+                    </div>
+                </form>
+
+                <p class="text-xs text-gray-500 mt-4">
+                    L'inserzionista riceverà una notifica via email e potrà risponderti direttamente.
+                </p>
+            </div>
+            @endif
         </div>
     </div>
 </x-app-layout>
