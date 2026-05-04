@@ -83,20 +83,7 @@
                         @if($userCars->count() > 0)
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                                 @foreach($userCars as $car)
-                                    <div class="border rounded-lg overflow-hidden">
-                                        @if($car->primaryMedia())
-                                            <img src="{{ $car->primaryMedia()->url }}" alt="{{ $car->title }}" class="w-full h-40 object-cover">
-                                        @else
-                                            <div class="w-full h-40 bg-gray-200 flex items-center justify-center">
-                                                <span class="text-gray-400">No image</span>
-                                            </div>
-                                        @endif
-                                        <div class="p-4">
-                                            <h4 class="font-medium">{{ $car->title }}</h4>
-                                            <p class="text-sm text-gray-600">{{ $car->brand->name }} • €{{ number_format($car->price, 0, ',', '.') }}</p>
-                                            <a href="{{ route('cars.edit', $car) }}" class="text-sm text-indigo-600 hover:text-indigo-800">Modifica</a>
-                                        </div>
-                                    </div>
+                                    <x-car-card :car="$car" variant="dashboard" :showEdit="true" />
                                 @endforeach
                             </div>
                         @endif
