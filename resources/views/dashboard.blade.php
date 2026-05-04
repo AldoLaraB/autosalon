@@ -101,10 +101,6 @@
                             </div>
                         @endif
                         <div class="flex gap-3">
-                            <a href="{{ route('cars.create') }}"
-                               class="inline-block px-5 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
-                                Inserisci la tua Auto
-                            </a>
                             @if(auth()->user()->hasVerifiedEmail())
                                 <a href="{{ route('shops.create') }}"
                                    class="inline-block px-5 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">

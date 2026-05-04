@@ -16,6 +16,14 @@
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                             {{ __('Dashboard') }}
                         </x-nav-link>
+                        @if (auth()->user()->hasRole('admin') || (auth()->user()->hasVerifiedEmail() && !auth()->user()->shop))
+                            <x-nav-link :href="route('shops.create')" :active="request()->routeIs('shops.create')">
+                                {{ __('Crea Shop') }}
+                            </x-nav-link>
+                        @endif
+                        <x-nav-link :href="route('cars.create')" :active="request()->routeIs('cars.create')">
+                            {{ __('Pubblica Annuncio') }}
+                        </x-nav-link>
                     @endauth
                 </div>
             </div>
@@ -93,6 +101,14 @@
             @auth
                 <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                     {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+                @if (auth()->user()->hasRole('admin') || (auth()->user()->hasVerifiedEmail() && !auth()->user()->shop))
+                    <x-responsive-nav-link :href="route('shops.create')" :active="request()->routeIs('shops.create')">
+                        {{ __('Crea Shop') }}
+                    </x-responsive-nav-link>
+                @endif
+                <x-responsive-nav-link :href="route('cars.create')" :active="request()->routeIs('cars.create')">
+                    {{ __('Pubblica Annuncio') }}
                 </x-responsive-nav-link>
             @endauth
         </div>
