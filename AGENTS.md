@@ -40,6 +40,7 @@
 - Credenziali admin: admin@example.com / password123
 - Sistema media usa pattern morph (HasMedia trait)
 - `.env` configurato per MySQL (autosalone database)
+- **IMPORTANTE**: In `routes/web.php`, le rotte statiche di creazione (`/shops/create`, `/cars/create`) devono essere definite **PRIMA** delle rotte dinamiche (`/shops/{shop}`, `/cars/{car}`) per evitare collisioni di routing che causano 404. Questo è testato in `tests/Feature/DashboardUserRouteTest.php`
 
 ### Controller e Route
 - **ProfileController**: `app/Http/Controllers/ProfileController.php` (edit, update, destroy)

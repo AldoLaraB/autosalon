@@ -283,8 +283,6 @@ Validazione file:
 | GET    | /dashboard      | closure                   | auth, verified | dashboard              |
 | GET    | /cerca          | SearchController@index    | -              | search.index           |
 | GET    | /search         | SearchController@search   | -              | search.results         |
-| GET    | /shops/{shop}   | ShopController@show       | -              | shops.show             |
-| GET    | /cars/{car}     | CarController@show        | -              | cars.show              |
 | GET    | /shops/create   | ShopController@create     | auth           | shops.create           |
 | POST   | /shops          | ShopController@store      | auth           | shops.store            |
 | GET    | /shops/{shop}/edit | ShopController@edit    | auth           | shops.edit             |
@@ -293,6 +291,8 @@ Validazione file:
 | POST   | /cars           | CarController@store       | auth           | cars.store             |
 | GET    | /cars/{car}/edit| CarController@edit        | auth           | cars.edit              |
 | PUT    | /cars/{car}     | CarController@update      | auth           | cars.update            |
+| GET    | /shops/{shop}   | ShopController@show       | -              | shops.show             |
+| GET    | /cars/{car}     | CarController@show        | -              | cars.show              |
 | POST   | /shops/{shop}/locations | LocationController@store | auth    | locations.store        |
 | DELETE | /shops/{shop}/locations/{location} | LocationController@destroy | auth | locations.destroy |
 | GET    | /profile        | ProfileController@edit    | auth           | profile.edit           |
@@ -308,11 +308,16 @@ Validazione file:
 | PATCH  | /admin/shops/{shop}/toggle | AdminController@toggleShopStatus | auth, role:admin | admin.shops.toggle |
 | PATCH  | /admin/cars/{car}/toggle | AdminController@toggleCarStatus | auth, role:admin | admin.cars.toggle |
 
+| POST   | /shops/{shop}/locations | LocationController@store | auth    | locations.store        |
+| DELETE | /shops/{shop}/locations/{location} | LocationController@destroy | auth | locations.destroy |
+
 Rotte auth.php (Breeze):
 
 - Login, Register, Logout, Password Reset, Email Verification
 
 **Note**: Registrazione assegna ruolo `user`. Creazione shop assegna `editor`. Admin ha accesso a `/admin/*`.
+
+**Ordine rotte importante**: Le rotte statiche (es. `/shops/create`, `/cars/create`) vengono definite **prima** delle rotte dinamiche (es. `/shops/{shop}`, `/cars/{car}`) per evitare collisioni di routing. Questo previene errori 404 quando si accede alle pagine di creazione.
 
 ---
 
@@ -695,13 +700,19 @@ Crea utente amministratore:
 
 - `tests/Feature/ExampleTest.php`
 - `tests/Feature/ProfileTest.php`
+- `tests/Feature/DashboardUserRouteTest.php` - Testa accesso dashboard user e collisione rotte shops/cars create
 - `tests/Feature/Auth/`
+  - `RegistrationTest.php` - Registrazione e assegnazione ruolo `user`
+  - `AuthenticationTest.php` - Login e redirect dashboard
+  - `EmailVerificationTest.php` - Verifica email
 
 ### Unit Tests
 
 - `tests/Unit/ExampleTest.php`
 
 Framework: Pest PHP
+
+**Test Coverage**: Dashboard user routes, authentication flows, role assignment
 
 ---
 
