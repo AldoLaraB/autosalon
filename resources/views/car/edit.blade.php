@@ -166,6 +166,18 @@
                     </div>
                 </div>
             @endif
+
+            <div class="mt-6 border-t pt-6">
+                <form action="{{ route('cars.destroy', $car) }}" method="POST"
+                      onsubmit="return confirm('Sei sicuro? L\'operazione è irreversibile.')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm">
+                        Elimina Annuncio
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 

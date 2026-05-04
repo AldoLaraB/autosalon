@@ -10,6 +10,15 @@ class Car extends Model
 {
     use HasMedia;
 
+    protected static function booted()
+    {
+        static::deleting(function ($car) {
+            foreach ($car->gallery() as $image) {
+                $car->deleteMedia($image);
+            }
+        });
+    }
+
     protected $fillable = [
         'user_id',
         'shop_id',

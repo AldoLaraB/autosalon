@@ -84,15 +84,25 @@
             </p>
         @endif
 
-        {{-- Slot per azioni extra (es. Modifica) --}}
+        {{-- Slot per azioni extra (es. Modifica, Elimina) --}}
         @if($variant === 'dashboard' && $showEdit)
-            <div class="mt-3 pt-3 border-t border-gray-100 dark:border-[#3E3E3A]">
+            <div class="mt-3 pt-3 border-t border-gray-100 dark:border-[#3E3E3A] flex justify-between">
                 <a
                     href="{{ route('cars.edit', $car) }}"
                     class="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium"
                 >
                     Modifica
                 </a>
+
+                <form action="{{ route('cars.destroy', $car) }}" method="POST"
+                      onsubmit="return confirm('Sei sicuro di voler eliminare questo annuncio?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                            class="text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 font-medium">
+                        Elimina
+                    </button>
+                </form>
             </div>
         @endif
 

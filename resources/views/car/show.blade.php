@@ -7,16 +7,14 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="mb-6">
-                <a href="{{ route('home') }}" class="text-blue-600 hover:underline">&larr; Torna alla ricerca</a>
-            </div>
-
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div>
-                            @if($car->primaryImage())
-                                <img src="{{ $car->primaryImage()->url }}" alt="{{ $car->brand->name }} {{ $car->model }}" class="w-full rounded-lg">
+                        <div x-data="{ selectedImage: '{{ $car->primaryImage()?->url ?? '' }}' }">
+                            @if($car->primaryImage() || $car->gallery()->count() > 0)
+                                <img :src="selectedImage || '{{ $car->primaryImage()?->url ?? '' }}'"
+                                     alt="{{ $car->brand->name }} {{ $car->model }}"
+                                     class="w-full rounded-lg">
                             @else
                                 <div class="w-full h-96 bg-gray-200 flex items-center justify-center rounded-lg">
                                     <span class="text-gray-500">Nessuna foto disponibile</span>
@@ -26,7 +24,10 @@
                             @if($car->gallery()->count() > 0)
                                 <div class="mt-4 grid grid-cols-4 gap-2">
                                     @foreach($car->gallery() as $image)
-                                        <img src="{{ $image->url }}" class="w-full h-20 object-cover rounded cursor-pointer">
+                                        <img src="{{ $image->url }}"
+                                             @click="selectedImage = '{{ $image->url }}'"
+                                             :class="{ 'ring-2 ring-blue-500 opacity-100': selectedImage === '{{ $image->url }}', 'opacity-70 hover:opacity-100': selectedImage !== '{{ $image->url }}' }"
+                                             class="w-full h-20 object-cover rounded cursor-pointer transition">
                                     @endforeach
                                 </div>
                             @endif

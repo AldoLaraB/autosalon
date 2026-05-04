@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/cars', 'App\Http\Controllers\CarController@store')->name('cars.store');
     Route::get('/cars/{car}/edit', 'App\Http\Controllers\CarController@edit')->name('cars.edit');
     Route::put('/cars/{car}', 'App\Http\Controllers\CarController@update')->name('cars.update');
+    Route::delete('/cars/{car}', 'App\Http\Controllers\CarController@destroy')->name('cars.destroy');
 
     Route::post('/shops/{shop}/locations', 'App\Http\Controllers\LocationController@store')->name('locations.store');
     Route::delete('/shops/{shop}/locations/{location}', 'App\Http\Controllers\LocationController@destroy')->name('locations.destroy');

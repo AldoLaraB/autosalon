@@ -130,4 +130,13 @@ class CarController extends Controller
         return redirect()->route('cars.show', $car->id)
             ->with('success', 'Auto aggiornata con successo!');
     }
+
+    public function destroy($id)
+    {
+        $car = Car::where('user_id', Auth::id())->findOrFail($id);
+        $car->delete();
+
+        return redirect()->route('dashboard')
+            ->with('success', 'Annuncio eliminato con successo!');
+    }
 }
