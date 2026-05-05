@@ -84,6 +84,26 @@
             </p>
         @endif
 
+        {{-- Firma inserzionista (avatar a destra, nome su hover) --}}
+        @if($car->relationLoaded('user'))
+        <div class="flex justify-end mt-2">
+            @php
+                $userAvatar = $car->user->primaryMedia('avatar');
+            @endphp
+            @if($userAvatar)
+                <img src="{{ $userAvatar->url }}"
+                     alt="{{ $car->user->name }}"
+                     title="{{ $car->user->name }}"
+                     class="w-8 h-8 rounded-full object-cover flex-shrink-0">
+            @else
+                <div class="w-8 h-8 rounded-full bg-gray-300 dark:bg-[#3E3E3A] flex items-center justify-center text-xs text-gray-600 dark:text-gray-400 flex-shrink-0"
+                     title="{{ $car->user->name }}">
+                    {{ substr($car->user->name, 0, 1) }}
+                </div>
+            @endif
+        </div>
+        @endif
+
         {{-- Slot per azioni extra (es. Modifica, Elimina) --}}
         @if($variant === 'dashboard' && $showEdit)
             <div class="mt-3 pt-3 border-t border-gray-100 dark:border-[#3E3E3A] flex justify-between">

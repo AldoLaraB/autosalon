@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     $recentCars = \App\Models\Car::where('is_active', true)
-        ->with('brand')
+        ->with(['brand', 'user.media'])
         ->latest()
         ->limit(6)
         ->get();

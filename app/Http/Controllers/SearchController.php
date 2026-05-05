@@ -20,7 +20,7 @@ class SearchController extends Controller
 
     public function search(Request $request)
     {
-        $query = Car::with(['brand', 'shop', 'location'])
+        $query = Car::with(['brand', 'shop', 'location', 'user.media'])
             ->where('is_active', true);
 
         if ($request->filled('brand_id')) {
