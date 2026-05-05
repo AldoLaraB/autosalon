@@ -52,4 +52,12 @@ class AdminController extends Controller
 
         return back()->with('success', 'Stato auto aggiornato!');
     }
+
+    public function deleteCar($id)
+    {
+        $car = Car::findOrFail($id);
+        $car->delete();
+
+        return back()->with('success', 'Annuncio eliminato con successo!');
+    }
 }

@@ -10,9 +10,7 @@
             @if (auth()->user()->hasRole('admin'))
                 <!-- Admin Dashboard -->
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <h3 class="font-semibold text-lg mb-4">Pannello Admin</h3>
-                        <p class="mb-4">Benvenuto, Amministratore!</p>
+                    <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <a href="{{ route('admin.users') }}" class="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
                                 <h4 class="font-medium">Gestisci Users</h4>
@@ -27,6 +25,23 @@
                                 <p class="text-sm text-gray-600">Modera annunci auto</p>
                             </a>
                         </div>
+                    </div>
+                </div>
+
+                {{-- Admin: I tuoi Annunci (stesso blocco di User) --}}
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-6">
+                    <div class="p-6 text-gray-900">
+                        <h3 class="font-semibold text-lg mb-4">I tuoi Annunci</h3>
+                        @php
+                            $userCars = auth()->user()->cars()->where('is_active', true)->with('brand')->latest()->limit(5)->get();
+                        @endphp
+                        @if($userCars->count() > 0)
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                                @foreach($userCars as $car)
+                                    <x-car-card :car="$car" variant="dashboard" :showEdit="true" :linkable="false" />
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
             @elseif (auth()->user()->hasRole('editor'))
@@ -83,7 +98,7 @@
                         @if($userCars->count() > 0)
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                                 @foreach($userCars as $car)
-                                    <x-car-card :car="$car" variant="dashboard" :showEdit="true" />
+                                    <x-car-card :car="$car" variant="dashboard" :showEdit="true" :linkable="false" />
                                 @endforeach
                             </div>
                         @endif

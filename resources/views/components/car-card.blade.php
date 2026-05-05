@@ -77,7 +77,11 @@
             </div>
         @else
             <h3 class="font-medium text-gray-900 dark:text-[#EDEDEC]">
-                {{ $car->title }}
+                @if(!$linkable)
+                    <a href="{{ route('cars.show', $car) }}" class="hover:underline">{{ $car->title }}</a>
+                @else
+                    {{ $car->title }}
+                @endif
             </h3>
             <p class="text-sm text-[#706f6c] dark:text-[#A1A09A] mt-1">
                 {{ $car->brand->name }} • {{ $formattedPrice }}

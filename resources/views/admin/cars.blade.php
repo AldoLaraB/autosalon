@@ -81,6 +81,15 @@
                                                         @endif
                                                     </button>
                                                 </form>
+
+                                                <form action="{{ route('admin.cars.delete', $car) }}" method="POST" class="inline ml-3"
+                                                      onsubmit="return confirm('Eliminare permanentemente questo annuncio? Verranno rimosse anche tutte le immagini.')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-sm text-red-600 hover:text-red-800">
+                                                        Elimina
+                                                    </button>
+                                                </form>
                                             </td>
                                         </tr>
                                     @endforeach

@@ -74,6 +74,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::patch('/admin/users/{user}/toggle', 'App\Http\Controllers\AdminController@toggleUserStatus')->name('admin.users.toggle');
     Route::patch('/admin/shops/{shop}/toggle', 'App\Http\Controllers\AdminController@toggleShopStatus')->name('admin.shops.toggle');
     Route::patch('/admin/cars/{car}/toggle', 'App\Http\Controllers\AdminController@toggleCarStatus')->name('admin.cars.toggle');
+    Route::delete('/admin/cars/{car}', 'App\Http\Controllers\AdminController@deleteCar')->name('admin.cars.delete');
 });
 
 require __DIR__.'/auth.php';
