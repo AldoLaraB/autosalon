@@ -47,10 +47,16 @@
 - **AvatarController**: `app/Http/Controllers/Profile/AvatarController.php` (edit, update, destroy)
 - **SearchController**: `app/Http/Controllers/SearchController.php` (index → /cerca, search → /search)
 - **ShopController**: `app/Http/Controllers/ShopController.php` (show, create, store, edit, update - prevent multiple shops, auto-assign editor role)
-- **CarController**: `app/Http/Controllers/CarController.php` (create, store + image handling, show, edit, update)
+- **CarController**: `app/Http/Controllers/CarController.php` (create, store + image handling, show, edit, update, destroy)
   - `store()`: Converte `shop_id`/`location_id` vuoti in `null`, valida max 5 immagini, salva tramite `addMedia()` (Intervention Image ridimensiona a 800px + 80% qualità)
+  - `destroy()`: elimina auto + immagini collegate (attiva `Car::booted()`)
+- **ContactController**: `app/Http/Controllers/ContactController.php` (store, index, markAsRead, destroy, reply)
+  - `store()`: pubblico, throttle:3/10min, salva messaggio + email al venditore
+  - `index()`: lista messaggi per l'utente loggato
+  - `reply()`: invia risposta via email al visitatore
 - **LocationController**: `app/Http/Controllers/LocationController.php` (store, destroy)
-- **AdminController**: `app/Http/Controllers/AdminController.php` (usersIndex, shopsIndex, carsIndex, toggleUserStatus, toggleShopStatus, toggleCarStatus)
+- **AdminController**: `app/Http/Controllers/AdminController.php` (usersIndex, shopsIndex, carsIndex, toggleUserStatus, toggleShopStatus, toggleCarStatus, deleteCar)
+  - `deleteCar()`: elimina permanentemente annuncio (attiva `Car::booted()` per pulizia immagini)
 - **RegisteredUserController**: `app/Http/Controllers/Auth/RegisteredUserController.php` (assign 'user' role on registration)
 - **AuthController API**: `app/Http/Controllers/Api/AuthController.php` (login, register, me, logout)
 - **ShopApiController**: `app/Http/Controllers/Api/ShopApiController.php` (index, show, requestDealer)
@@ -74,7 +80,7 @@
 - **Admin**: controllo totale (`admin` ruolo) → gestione users/shops/cars da `/admin/*`
 
 ### Dashboard per Ruolo
-- **Admin**: vede pannello admin con link a users, shops, cars
+- **Admin**: vede link a users, shops, cars + "I tuoi Annunci" con propri annunci (modifica/elimina)
 - **Editor**: vede "Il tuo Spazio" con link al shop, inserimento auto, gestione locations
 - **User**: vede "I tuoi Annunci" con le proprie auto e possibilità di creare negozio
 
@@ -109,19 +115,22 @@
 ### View Blade
 - `resources/views/welcome.blade.php` - Landing page con search box + recent cars + CTA register
 - `resources/views/dashboard.blade.php` - Dashboard differenziata per ruolo (admin/shop/user)
-- `resources/views/profile/edit.blade.php` - Modifica profilo
-- `resources/views/profile/avatar.blade.php` - Modifica avatar
 - `resources/views/search/index.blade.php` - Pagina ricerca avanzata (/cerca)
 - `resources/views/search/results.blade.php` - Risultati ricerca (/search)
 - `resources/views/shops/show.blade.php` - Pagina pubblica negozio
 - `resources/views/shops/create.blade.php` - Crea negozio (auth) - previene shop multipli
 - `resources/views/shops/edit.blade.php` - Modifica negozio (auth)
-- `resources/views/cars/show.blade.php` - Dettaglio auto
+- `resources/views/cars/show.blade.php` - Dettaglio auto (galleria immagini Alpine.js + form contatto)
 - `resources/views/cars/create.blade.php` - Inserisci auto (auth) - gestione errori validazione + anteprima 5 immagini + old()
 - `resources/views/cars/edit.blade.php` - Modifica auto (auth)
+- `resources/views/messages/index.blade.php` - Messaggi ricevuti per annunci
 - `resources/views/admin/users.blade.php` - Admin: gestione users (attiva/disattiva)
 - `resources/views/admin/shops.blade.php` - Admin: gestione shops
-- `resources/views/admin/cars.blade.php` - Admin: gestione auto
+- `resources/views/admin/cars.blade.php` - Admin: gestione auto (attiva/disattiva/elimina)
+- `resources/views/components/car-card.blade.php` - Componente card auto (compact, detailed, dashboard)
+- `resources/views/layouts/navigation.blade.php` - Navigation con link Messaggi + badge
+- `resources/views/emails/contact-seller.blade.php` - Email notifica nuovo messaggio
+- `resources/views/emails/reply-visitor.blade.php` - Email risposta al visitatore
 
 ### Test
 - Framework: Pest PHP
@@ -141,5 +150,7 @@
 ### Note importanti
 - Campo `role` rimosso da users, usare Spatie Permission
 - Evento `deleting` su User cancella avatar e gallery automaticamente
+- Evento `deleting` su Car cancella immagini gallery automaticamente (tramite `Car::booted()`)
 - `is_active` su User per attivare/disattivare account
 - Login API verifica `is_active = true`
+- **IMPORTANTE**: NON usare `primaryMedia()` o `gallery()` in `with()` - causano errore `addEagerConstraints()`. Usare lazy loading nelle viste (`$car->primaryImage()`, `$car->gallery()`)

@@ -127,6 +127,19 @@
 | created_at | timestamp |                                    |
 | updated_at | timestamp |                                    |
 
+### Tabella `contacts`
+| Colonna      | Tipo      | Note                                |
+| ------------ | --------- | ----------------------------------- |
+| id           | bigint    | Primary key                         |
+| car_id       | bigint    | FK a cars (onDelete cascade)        |
+| sender_name  | string    | Nome del visitatore                 |
+| sender_email | string    | Email del visitatore                |
+| message      | text      | Messaggio                           |
+| is_read      | boolean   | Letto/non letto (default: false)    |
+| replied_at   | timestamp | Data risposta (nullable)            |
+| created_at   | timestamp |                                     |
+| updated_at   | timestamp |                                     |
+
 ---
 
 ## 4. Modelli (Eloquent)
@@ -173,7 +186,16 @@
 - Usa trait: `HasMedia` (per foto auto)
 - Relazioni: `belongsTo(User)`, `belongsTo(Shop)`, `belongsTo(Location)`, `belongsTo(Brand)`
 - Campi fillable: `user_id`, `shop_id`, `location_id`, `brand_id`, `model`, `year`, `price`, `mileage`, `fuel_type`, `transmission`, `is_new`, `description`, `is_active`
-- Metodi: `primaryImage()` (primaryMedia 'gallery'), `gallery()` (getMediaByCollection 'gallery')
+- Metodi: `primaryImage()` (primaryMedia 'gallery'), `gallery()` (getMediaByCollection 'gallery'), `contacts()` (hasMany Contact)
+
+### Contact Model
+
+**Path**: `app/Models/Contact.php`
+
+- Rappresenta un messaggio di contatto per un annuncio
+- Relazioni: `belongsTo(Car)`
+- Campi fillable: `car_id`, `sender_name`, `sender_email`, `message`, `is_read`, `replied_at`
+- Casts: `is_read` (boolean), `replied_at` (datetime)
 
 ### Media Model
 
@@ -250,7 +272,8 @@ Validazione file:
 - `show($id)`: visualizza dettaglio auto con gallery
 - `edit($id)`: form modifica auto
 - `update(Request, $id)`: aggiorna auto
- 
+- `destroy($id)`: elimina auto (verifica proprietà, attiva `Car::booted()` per pulizia immagini)
+
 **Note implementazione store()**:
 - Converte `shop_id`/`location_id` stringa vuota in `null` prima della validazione
 - Validazione immagini: `photos` (array, min:1, max:5), `photos.*` (image, mimes:jpeg,png,jpg,gif,webp)
@@ -263,6 +286,28 @@ Validazione file:
 
 - `store(Request, $shopId)`: aggiunge punto vendita a uno shop
 - `destroy($shopId, $locationId)`: rimuove punto vendita
+
+### ContactController
+
+**Path**: `app/Http/Controllers/ContactController.php`
+
+- `store(Request, $carId)`: salva messaggio visitatore + invia email al venditore (pubblica, throttle:3/10min)
+- `index()`: lista messaggi ricevuti per l'utente loggato
+- `markAsRead(Contact)`: segna messaggio come letto
+- `destroy(Contact)`: elimina messaggio
+- `reply(Request, Contact)`: invia risposta via email al visitatore
+
+### AdminController
+
+**Path**: `app/Http/Controllers/AdminController.php`
+
+- `usersIndex()`: lista utenti con paginazione
+- `shopsIndex()`: lista negozi con paginazione
+- `carsIndex()`: lista annunci con paginazione
+- `toggleUserStatus($id)`: attiva/disattiva utente
+- `toggleShopStatus($id)`: attiva/disattiva negozio
+- `toggleCarStatus($id)`: attiva/disattiva annuncio
+- `deleteCar($id)`: elimina permanentemente annuncio (con immagini)
 
 ---
 
@@ -313,6 +358,13 @@ Validazione file:
 | PATCH  | /admin/users/{user}/toggle | AdminController@toggleUserStatus | auth, role:admin | admin.users.toggle |
 | PATCH  | /admin/shops/{shop}/toggle | AdminController@toggleShopStatus | auth, role:admin | admin.shops.toggle |
 | PATCH  | /admin/cars/{car}/toggle | AdminController@toggleCarStatus | auth, role:admin | admin.cars.toggle |
+| DELETE | /admin/cars/{car} | AdminController@deleteCar | auth, role:admin | admin.cars.delete |
+| DELETE | /cars/{car} | CarController@destroy | auth | cars.destroy |
+| POST   | /cars/{car}/contact | ContactController@store | throttle:3,10 | cars.contact |
+| GET    | /messages | ContactController@index | auth | messages.index |
+| PATCH  | /messages/{contact}/read | ContactController@markAsRead | auth | messages.read |
+| DELETE | /messages/{contact} | ContactController@destroy | auth | messages.destroy |
+| POST   | /messages/{contact}/reply | ContactController@reply | auth | messages.reply |
 
 | POST   | /shops/{shop}/locations | LocationController@store | auth    | locations.store        |
 | DELETE | /shops/{shop}/locations/{location} | LocationController@destroy | auth | locations.destroy |
@@ -565,8 +617,10 @@ Metodi:
 | profile/partials/delete-user-form.blade.php                | Form eliminazione account |
 | admin/users.blade.php                                      | Admin: gestione users (attiva/disattiva) |
 | admin/shops.blade.php                                      | Admin: gestione shops |
-| admin/cars.blade.php                                       | Admin: gestione auto |
-| layouts/navigation.blade.php                               | Navigation bar (logo → dashboard/home, solo Dashboard link per auth) |
+| admin/cars.blade.php                                       | Admin: gestione auto (tabella + elimina) |
+| messages/index.blade.php                                   | Messaggi ricevuti per gli annunci |
+| components/car-card.blade.php                              | Componente card auto (varianti: compact, detailed, dashboard) |
+| layouts/navigation.blade.php                               | Navigation bar (logo → dashboard/home, link Messaggi con badge, solo Dashboard per auth) |
 
 Layout: usa componenti Blade Laravel (x-app-layout, x-slot)
 
