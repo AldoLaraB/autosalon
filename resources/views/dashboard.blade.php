@@ -60,9 +60,9 @@
                                        class="inline-block px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
                                         Visualizza Vetrina
                                     </a>
-                                    <a href="{{ route('shops.edit', $shop) }}"
+                                    <a href="{{ route('shops.manage') }}"
                                        class="inline-block px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
-                                        Modifica Negozio
+                                        Gestisci Shop
                                     </a>
                                 </div>
                             </div>

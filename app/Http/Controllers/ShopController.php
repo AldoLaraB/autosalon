@@ -77,7 +77,79 @@ class ShopController extends Controller
 
         $shop->update($request->only(['name', 'description', 'phone', 'email']));
 
-        return redirect()->route('shop.show', $shop->id)
+        return redirect()->route('shops.manage')
             ->with('success', 'Negozio aggiornato con successo!');
+    }
+
+    public function manage()
+    {
+        $shop = Shop::where('user_id', Auth::id())->firstOrFail();
+
+        return view('shop.manage', compact('shop'));
+    }
+
+    public function updateLogo(Request $request, $id)
+    {
+        $shop = Shop::where('user_id', Auth::id())->findOrFail($id);
+
+        $request->validate([
+            'logo' => 'required|image|mimes:jpeg,png,jpg,gif,webp',
+        ]);
+
+        // Rimuovi logo precedente
+        $oldLogo = $shop->primaryMedia('logo');
+        if ($oldLogo) {
+            $shop->deleteMedia($oldLogo);
+        }
+
+        $shop->addMedia($request->file('logo'), 'logo', true);
+
+        return redirect()->route('shops.manage')
+            ->with('success', 'Logo aggiornato con successo!');
+    }
+
+    public function destroyLogo($id)
+    {
+        $shop = Shop::where('user_id', Auth::id())->findOrFail($id);
+
+        $logo = $shop->primaryMedia('logo');
+        if ($logo) {
+            $shop->deleteMedia($logo);
+        }
+
+        return redirect()->route('shops.manage')
+            ->with('success', 'Logo rimosso.');
+    }
+
+    public function updateCover(Request $request, $id)
+    {
+        $shop = Shop::where('user_id', Auth::id())->findOrFail($id);
+
+        $request->validate([
+            'cover' => 'required|image|mimes:jpeg,png,jpg,gif,webp',
+        ]);
+
+        $oldCover = $shop->primaryMedia('cover');
+        if ($oldCover) {
+            $shop->deleteMedia($oldCover);
+        }
+
+        $shop->addMedia($request->file('cover'), 'cover', true);
+
+        return redirect()->route('shops.manage')
+            ->with('success', 'Copertina aggiornata con successo!');
+    }
+
+    public function destroyCover($id)
+    {
+        $shop = Shop::where('user_id', Auth::id())->findOrFail($id);
+
+        $cover = $shop->primaryMedia('cover');
+        if ($cover) {
+            $shop->deleteMedia($cover);
+        }
+
+        return redirect()->route('shops.manage')
+            ->with('success', 'Copertina rimossa.');
     }
 }

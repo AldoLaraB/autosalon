@@ -130,43 +130,67 @@
                         </div>
 
                         @if($shops->count() > 0)
-                            <div class="mt-6 border-t pt-6">
-                                <h3 class="text-lg font-medium mb-4">Collega al tuo Negozio</h3>
-                                
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label for="shop_id" class="block text-sm font-medium text-gray-700">Negozio</label>
-                                    <select name="shop_id" id="shop_id" 
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                                        <option value="">Nessuno (annuncio personale)</option>
-                                        @foreach($shops as $shop)
-                                            <option value="{{ $shop->id }}" {{ old('shop_id') == $shop->id ? 'selected' : '' }}>
-                                                {{ $shop->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('shop_id')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
+                            @php
+                                $preselectedShopId = old('shop_id', request('shop_id'));
+                                $preselectedShop = $preselectedShopId ? $shops->firstWhere('id', $preselectedShopId) : null;
+                                $filteredLocations = $preselectedShop ? $locations->where('shop_id', $preselectedShop->id) : $locations;
+                            @endphp
 
-                                <div>
-                                    <label for="location_id" class="block text-sm font-medium text-gray-700">Punto Vendita</label>
-                                    <select name="location_id" id="location_id" 
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                                        <option value="">Seleziona prima un negozio...</option>
-                                        @foreach($locations as $location)
-                                            <option value="{{ $location->id }}" data-shop="{{ $location->shop_id }}"
-                                                {{ old('location_id') == $location->id ? 'selected' : '' }}>
-                                                {{ $location->address }}, {{ $location->city }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('location_id')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
+                            @if($preselectedShop)
+                                {{-- shop_id passato da Gestisci Shop → hidden --}}
+                                <input type="hidden" name="shop_id" value="{{ $preselectedShop->id }}">
+                            @else
+                                <div class="mt-6 border-t pt-6">
+                                    <h3 class="text-lg font-medium mb-4">Collega al tuo Negozio</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="shop_id" class="block text-sm font-medium text-gray-700">Negozio</label>
+                                        <select name="shop_id" id="shop_id" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                            <option value="">Nessuno (annuncio personale)</option>
+                                            @foreach($shops as $shop)
+                                                <option value="{{ $shop->id }}" {{ old('shop_id') == $shop->id ? 'selected' : '' }}>
+                                                    {{ $shop->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('shop_id')
+                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    </div>
                                 </div>
-                                </div>
+                            @endif
+
+                            {{-- Location: selezionabile solo se più di 1, altrimenti hidden --}}
+                            <div class="mt-6 border-t pt-6">
+                                <h3 class="text-lg font-medium mb-4">Punto Vendita</h3>
+                                @if($filteredLocations->count() > 1)
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="location_id" class="block text-sm font-medium text-gray-700">Punto Vendita</label>
+                                            <select name="location_id" id="location_id" 
+                                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                                <option value="">Seleziona...</option>
+                                                @foreach($filteredLocations as $location)
+                                                    <option value="{{ $location->id }}" {{ old('location_id') == $location->id ? 'selected' : '' }}>
+                                                        {{ $location->address }}, {{ $location->city }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('location_id')
+                                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                @elseif($filteredLocations->count() === 1)
+                                    <input type="hidden" name="location_id" value="{{ $filteredLocations->first()->id }}">
+                                    <p class="text-sm text-gray-600">
+                                        📍 {{ $filteredLocations->first()->address }}, {{ $filteredLocations->first()->city }}
+                                    </p>
+                                @else
+                                    <p class="text-sm text-gray-500">Nessun punto vendita disponibile. Aggiungili dalla pagina <a href="{{ route('shops.manage') }}" class="text-blue-600 hover:underline">Gestisci Shop</a>.</p>
+                                @endif
                             </div>
                         @endif
 

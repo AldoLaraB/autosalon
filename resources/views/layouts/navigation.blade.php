@@ -16,7 +16,12 @@
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                             {{ __('Dashboard') }}
                         </x-nav-link>
-                        @if (auth()->user()->hasRole('admin') || (auth()->user()->hasVerifiedEmail() && !auth()->user()->shop))
+                        @php $userShop = auth()->user()->shop; @endphp
+                        @if($userShop)
+                            <x-nav-link :href="route('shops.manage')" :active="request()->routeIs('shops.manage')">
+                                {{ __('Gestisci Shop') }}
+                            </x-nav-link>
+                        @elseif(auth()->user()->hasRole('admin') || auth()->user()->hasVerifiedEmail())
                             <x-nav-link :href="route('shops.create')" :active="request()->routeIs('shops.create')">
                                 {{ __('Crea Shop') }}
                             </x-nav-link>
@@ -116,7 +121,12 @@
                 <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                     {{ __('Dashboard') }}
                 </x-responsive-nav-link>
-                @if (auth()->user()->hasRole('admin') || (auth()->user()->hasVerifiedEmail() && !auth()->user()->shop))
+                @php $userShop = auth()->user()->shop; @endphp
+                @if($userShop)
+                    <x-responsive-nav-link :href="route('shops.manage')" :active="request()->routeIs('shops.manage')">
+                        {{ __('Gestisci Shop') }}
+                    </x-responsive-nav-link>
+                @elseif(auth()->user()->hasRole('admin') || auth()->user()->hasVerifiedEmail())
                     <x-responsive-nav-link :href="route('shops.create')" :active="request()->routeIs('shops.create')">
                         {{ __('Crea Shop') }}
                     </x-responsive-nav-link>

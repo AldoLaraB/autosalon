@@ -1,34 +1,14 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Gestione Shops') }}
+        </h2>
+    </x-slot>
 
-    <title>Admin - Shops - {{ config('app.name', 'Laravel') }}</title>
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body class="bg-gray-100">
-    <div class="min-h-screen">
-        <!-- Navigation -->
-        <nav class="bg-white border-b border-gray-100">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
-                    <div class="flex items-center">
-                        <a href="{{ route('dashboard') }}" class="text-lg font-semibold">Admin Panel</a>
-                    </div>
-                    <div class="flex items-center">
-                        <a href="{{ route('dashboard') }}" class="text-sm text-gray-600 hover:text-gray-900">← Torna alla Dashboard</a>
-                    </div>
-                </div>
-            </div>
-        </nav>
-
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <h2 class="text-2xl font-bold mb-6">Gestione Shops</h2>
 
                         @if(session('success'))
                             <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">
@@ -91,8 +71,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
         </div>
     </div>
-</body>
-</html>
+</x-app-layout>

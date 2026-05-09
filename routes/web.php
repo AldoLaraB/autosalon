@@ -30,6 +30,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/shops', 'App\Http\Controllers\ShopController@store')->name('shops.store');
     Route::get('/shops/{shop}/edit', 'App\Http\Controllers\ShopController@edit')->name('shops.edit');
     Route::put('/shops/{shop}', 'App\Http\Controllers\ShopController@update')->name('shops.update');
+    Route::get('/shops/manage', 'App\Http\Controllers\ShopController@manage')->name('shops.manage');
+    Route::post('/shops/{shop}/logo', 'App\Http\Controllers\ShopController@updateLogo')->name('shops.logo.update');
+    Route::delete('/shops/{shop}/logo', 'App\Http\Controllers\ShopController@destroyLogo')->name('shops.logo.destroy');
+    Route::post('/shops/{shop}/cover', 'App\Http\Controllers\ShopController@updateCover')->name('shops.cover.update');
+    Route::delete('/shops/{shop}/cover', 'App\Http\Controllers\ShopController@destroyCover')->name('shops.cover.destroy');
 
     Route::get('/cars/create', 'App\Http\Controllers\CarController@create')->name('cars.create');
     Route::post('/cars', 'App\Http\Controllers\CarController@store')->name('cars.store');
