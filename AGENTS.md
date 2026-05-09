@@ -46,7 +46,10 @@
 - **ProfileController**: `app/Http/Controllers/ProfileController.php` (edit, update, destroy)
 - **AvatarController**: `app/Http/Controllers/Profile/AvatarController.php` (edit, update, destroy)
 - **SearchController**: `app/Http/Controllers/SearchController.php` (index → /cerca, search → /search)
-- **ShopController**: `app/Http/Controllers/ShopController.php` (show, create, store, edit, update - prevent multiple shops, auto-assign editor role)
+- **ShopController**: `app/Http/Controllers/ShopController.php` (show, create, store, edit, update, manage, updateLogo, destroyLogo, updateCover, destroyCover - prevent multiple shops, auto-assign editor role)
+  - `manage()`: pagina unificata con info, logo, cover, locations
+  - `updateLogo()/destroyLogo()`: upload/rimuovi logo negozio
+  - `updateCover()/destroyCover()`: upload/rimuovi copertina negozio
 - **CarController**: `app/Http/Controllers/CarController.php` (create, store + image handling, show, edit, update, destroy)
   - `store()`: Converte `shop_id`/`location_id` vuoti in `null`, valida max 5 immagini, salva tramite `addMedia()` (Intervention Image ridimensiona a 800px + 80% qualità)
   - `destroy()`: elimina auto + immagini collegate (attiva `Car::booted()`)
@@ -77,6 +80,7 @@
 - **Registrazione**: tutti si registrano come `user` (ruolo automatico)
 - **User semplice**: può creare annunci auto singoli (`cars.create`)
 - **Editor/Dealer**: crea shop → auto-assign ruolo `editor` → può gestire shop, auto, locations
+  - NAV mostra "Gestisci Shop" (invece di "Crea Shop") se shop già registrato
 - **Admin**: controllo totale (`admin` ruolo) → gestione users/shops/cars da `/admin/*`
 
 ### Dashboard per Ruolo

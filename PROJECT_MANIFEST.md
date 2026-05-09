@@ -262,6 +262,11 @@ Validazione file:
 - `store(Request)`: salva nuovo negozio
 - `edit($id)`: form modifica negozio
 - `update(Request, $id)`: aggiorna negozio
+- `manage()`: pagina unificata gestione shop (info, logo, cover, locations)
+- `updateLogo(Request, $id)`: carica nuovo logo
+- `destroyLogo($id)`: rimuove logo
+- `updateCover(Request, $id)`: carica nuova copertina
+- `destroyCover($id)`: rimuove copertina
 
 ### CarController
  
@@ -338,6 +343,11 @@ Validazione file:
 | POST   | /shops          | ShopController@store      | auth           | shops.store            |
 | GET    | /shops/{shop}/edit | ShopController@edit    | auth           | shops.edit             |
 | PUT    | /shops/{shop}   | ShopController@update     | auth           | shops.update           |
+| GET    | /shops/manage   | ShopController@manage     | auth           | shops.manage           |
+| POST   | /shops/{shop}/logo | ShopController@updateLogo | auth        | shops.logo.update      |
+| DELETE | /shops/{shop}/logo | ShopController@destroyLogo | auth       | shops.logo.destroy     |
+| POST   | /shops/{shop}/cover | ShopController@updateCover | auth       | shops.cover.update     |
+| DELETE | /shops/{shop}/cover | ShopController@destroyCover | auth      | shops.cover.destroy    |
 | GET    | /cars/create    | CarController@create      | auth           | cars.create            |
 | POST   | /cars           | CarController@store       | auth           | cars.store             |
 | GET    | /cars/{car}/edit| CarController@edit        | auth           | cars.edit              |
@@ -607,6 +617,7 @@ Metodi:
 | shops/show.blade.php                                       | Pagina pubblica negozio con auto e locations |
 | shops/create.blade.php                                     | Form creazione negozio (auth) - previene shop multipli |
 | shops/edit.blade.php                                       | Form modifica negozio (auth) |
+| shop/manage.blade.php                                      | Gestione negozio (info, logo, cover, locations) |
 | cars/show.blade.php                                        | Dettaglio auto con gallery |
 | cars/create.blade.php                                      | Form inserimento auto (auth) - gestione errori validazione + anteprima 5 immagini |
 | cars/edit.blade.php                                        | Form modifica auto (auth) |
@@ -620,7 +631,7 @@ Metodi:
 | admin/cars.blade.php                                       | Admin: gestione auto (tabella + elimina) |
 | messages/index.blade.php                                   | Messaggi ricevuti per gli annunci |
 | components/car-card.blade.php                              | Componente card auto (varianti: compact, detailed, dashboard) |
-| layouts/navigation.blade.php                               | Navigation bar (logo → dashboard/home, link Messaggi con badge, solo Dashboard per auth) |
+| layouts/navigation.blade.php                               | Navigation bar (logo → dashboard/home, link Messaggi con badge, link Shop dinamico: Gestisci/Crea) |
 
 Layout: usa componenti Blade Laravel (x-app-layout, x-slot)
 
