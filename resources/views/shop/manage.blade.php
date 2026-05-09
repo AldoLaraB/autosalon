@@ -160,6 +160,62 @@
                 </div>
             </div>
 
+            {{-- STILE VETRINA --}}
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold mb-4">Stile Vetrina</h3>
+                    <form action="{{ route('shops.update', $shop->id) }}" method="POST"
+                          x-data="{ theme: '{{ $shop->theme }}' }">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="name" value="{{ $shop->name }}">
+                        <input type="hidden" name="description" value="{{ $shop->description }}">
+                        <input type="hidden" name="phone" value="{{ $shop->phone }}">
+                        <input type="hidden" name="email" value="{{ $shop->email }}">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <label class="border-2 rounded-lg p-4 cursor-pointer text-center transition"
+                                   :class="theme === 'default' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-400'">
+                                <input type="radio" name="theme" value="default"
+                                       x-model="theme" class="sr-only">
+                                <div class="w-full h-20 bg-white border border-gray-300 rounded mb-2 flex items-center justify-center">
+                                    <span class="text-blue-600 font-bold text-lg">A</span>
+                                </div>
+                                <span class="text-sm font-medium">Classico</span>
+                                <p class="text-xs text-gray-500 mt-1">Stile standard, pulito e professionale</p>
+                            </label>
+
+                            <label class="border-2 rounded-lg p-4 cursor-pointer text-center transition"
+                                   :class="theme === 'modern' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-400'">
+                                <input type="radio" name="theme" value="modern"
+                                       x-model="theme" class="sr-only">
+                                <div class="w-full h-20 bg-gray-900 border border-gray-700 rounded mb-2 flex items-center justify-center">
+                                    <span class="text-white font-bold text-lg">A</span>
+                                </div>
+                                <span class="text-sm font-medium">Modern</span>
+                                <p class="text-xs text-gray-500 mt-1">Design scuro, elegante e moderno</p>
+                            </label>
+
+                            <label class="border-2 rounded-lg p-4 cursor-pointer text-center transition"
+                                   :class="theme === 'elegant' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-400'">
+                                <input type="radio" name="theme" value="elegant"
+                                       x-model="theme" class="sr-only">
+                                <div class="w-full h-20 bg-amber-50 border-2 border-amber-300 rounded mb-2 flex items-center justify-center">
+                                    <span class="text-amber-700 font-bold text-lg" style="font-family: serif;">A</span>
+                                </div>
+                                <span class="text-sm font-medium">Elegant</span>
+                                <p class="text-xs text-gray-500 mt-1">Toni caldi, raffinato e lussuoso</p>
+                            </label>
+                        </div>
+                        <div class="mt-4 flex justify-end">
+                            <button type="submit"
+                                    class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm">
+                                Applica Stile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             {{-- PUNTI VENDITA --}}
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">

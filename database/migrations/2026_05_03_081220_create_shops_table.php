@@ -16,6 +16,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
+            $table->string('theme')->default('default');
             $table->timestamps();
         });
     }

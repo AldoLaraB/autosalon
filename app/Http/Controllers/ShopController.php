@@ -73,9 +73,10 @@ class ShopController extends Controller
             'description' => 'nullable|string',
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
+            'theme' => 'in:default,modern,elegant',
         ]);
 
-        $shop->update($request->only(['name', 'description', 'phone', 'email']));
+        $shop->update($request->only(['name', 'description', 'phone', 'email', 'theme']));
 
         return redirect()->route('shops.manage')
             ->with('success', 'Negozio aggiornato con successo!');

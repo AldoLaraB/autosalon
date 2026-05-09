@@ -18,6 +18,7 @@ class Shop extends Model
         'is_active',
         'phone',
         'email',
+        'theme',
     ];
 
     protected $casts = [
